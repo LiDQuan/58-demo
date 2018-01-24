@@ -2,6 +2,7 @@
 爬取代理库
 """
 import urllib
+import sqlite3
 import re
 from urllib import request
 
