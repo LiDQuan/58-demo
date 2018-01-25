@@ -4,6 +4,7 @@
 import urllib
 import sqlite3
 import re
+import sqlite3
 from urllib import request
 
 
@@ -43,34 +44,30 @@ class Get_proxy(object):
         pattern_port = re.compile('<td\sdata-title="PORT">(.*?)</td>',re.S)
         content_ip_list = pattern_ip.findall(html)
         content_port_list = pattern_port.findall(html)
-        self.proxy_write_list(content_ip_list,"ip")
-        self.proxy_write_list(content_port_list,"port")
 
 
-    def proxy_write_list(self, list_o, name):
+
+        #原以列表形式写入文件
+        #self.proxy_sql_set(content_ip_list,"ip")
+        #self.proxy_sql_set(content_port_list,"port")
+
+    def proxy_sql_set(self, list_o, name):
         """
-        将获取的ip列表以列表形式，存入本地指定文件，以待读取
+        将获取的ip列表以列表形式，存入数据库中，以待读取
         :param list:
         :return:
         """
-        print("正在将ip写入本地....")
-        with open(name + ".txt","a") as f:
-            f.write(str(list_o))
+        #如果没有则在此目录创建一个数据库，如果已有该数据库，则打开该数据库
+        connt = sqlite3.connect("data.db")
+        #创建数据库游标
+        cursor = connt.cursor()
+        #建立表，proxy_list 代理ip爬取表，data_list数据表
+        cursor.execute("CREATE TABLE 'proxy_list'([id] integer(4) PRIMARY KEY,  [IP] varchar(20), [PROT] varchar(20))")
 
-    def starwork(self):
-        """
-        控制爬虫程序的运行
-        :return:
-        """
-        while self.flag:
-            self.proxy_down()
-            command = input("如果想退出，则输入quit，如果继续则按任意键！")
-            if command == "quit":
-            #如果想退出则输入quit
-                self.flag = False
-            #如果未输入，则将Page+1，继续爬取
-            self.Page += 1
-        print("Thank you!!")
+        #print("正在将ip写入本地....")
+        #with open(name + ".txt","a") as f:
+        #    f.write(str(list_o))
+
 
 
 if __name__ == "__main__":
